@@ -10,9 +10,9 @@ class bot():
         self.URL = "https://api.telegram.org/bot{}/".format(TOKEN)
 
     def get_updates(self,offset=None):
-        url = self.URL + "getUpdates" #getUpdates corresponds to the telegram API.
+        url = self.URL + "getUpdates?timeout=100" #getUpdates corresponds to the telegram API.
         if offset:
-            url += "?offset={}".format(offset)
+            url += "&offset={}".format(offset)
         js = get_json_from_url(url)
         return js
     
