@@ -10,18 +10,17 @@ import time
 import config
 import logging
 
-#Logging system Setup
+# Logging system Setup
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 # create a file handler
-handler = logging.handlers.RotatingFileHandler('telegram-raspy.log',mode='w',
-                                       maxBytes=20000,backupCount=3)
+handler = logging.FileHandler('telegram-raspy.log', mode='w')
 handler.setLevel(logging.INFO)
 # create a logging format
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
-logger.info('---------------Telegram-Raspy------------' )
+logger.info('---------------Telegram-Raspy------------')
 logger.info('Adding personal info(Token,API and Chat_id)')
 TOKEN = config.TOKEN
 SONARR_API = config.SONARR_API
@@ -31,31 +30,34 @@ logger.info('Initializing telegram bot and sonarr parser')
 telegram = bot(TOKEN)
 sonarr = sonarr(SONARR_API)
 
+
 def tel_sonarr_calendar():
     text = []
     calendar = sonarr.get_calendar()
     for series in calendar:
-        text.append("--{} - {}  -{}".format(series['title'] \
-        ,series['episode'],series['date']))
+        text.append("--{} - {}  -{}".format(series['title']
+                                            , series['episode'], series['date']))
     message = "\n".join(text)
-    telegram.send_message(message,CHAT_ID)
-    
+    telegram.send_message(message, CHAT_ID)
+
+
 def tel_sonarr_grabbed():
     grabbed = sonarr.get_history()
     text = []
     for episode in grabbed:
-        text.append("--{} - {}".format(episode['title'],episode['episode']))
+        text.append("--{} - {}".format(episode['title'], episode['episode']))
     message = "\n".join(text)
-    telegram.send_message(message,CHAT_ID)
+    telegram.send_message(message, CHAT_ID)
+
 
 def handle_updates(updates):
     for update in updates["result"]:
         text = update["message"]["text"]
         logger.info('Message says: "%s"', text)
         if text == "/sonarr":
-            keyboard = telegram.build_keyboard(['Sonarr grabbed','Sonarr calendar'])
+            keyboard = telegram.build_keyboard(['Sonarr grabbed', 'Sonarr calendar'])
             telegram.send_message("Select an option", CHAT_ID, keyboard)
-            
+
         elif text == "/start":
             keyboard = telegram.build_keyboard(['/sonarr'])
             telegram.send_message("Server Manager", CHAT_ID, keyboard)
@@ -67,8 +69,7 @@ def handle_updates(updates):
             tel_sonarr_grabbed()
         else:
             logger.info('Message not understood')
-            telegram.send_message("Sorry, I didn't understand you",CHAT_ID)
-
+            telegram.send_message("Sorry, I didn't understand you", CHAT_ID)
 
 
 def main():
@@ -82,5 +83,6 @@ def main():
             handle_updates(updates)
         time.sleep(0.5)
 
+
 if __name__ == '__main__':
-  main()
+    main()

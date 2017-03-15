@@ -17,4 +17,3 @@ def get_json_from_url(url):
     content = get_url(url)
     js = json.loads(content)
     return js
-
