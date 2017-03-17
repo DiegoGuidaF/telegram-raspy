@@ -9,7 +9,7 @@ from sonarr import *
 import time
 import config
 import logging
-
+from subprocess import call
 # Logging system Setup
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -67,6 +67,9 @@ def handle_updates(updates):
         elif text == "Sonarr grabbed":
             logger.info('SCRIPT: Sending Sonarr grabbed history')
             tel_sonarr_grabbed()
+        elif text == "/status":
+            logger.info('SCRIPT: Sending temp to server')
+            call('./client.o')
         else:
             logger.info('Message not understood')
             telegram.send_message("Sorry, I didn't understand you", CHAT_ID)
